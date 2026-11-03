@@ -71,3 +71,4 @@ footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;paddin
   .sheet ol{margin:4pt 0 0;padding-left:16pt}
   .sheet li{margin-bottom:1pt}
 }
+@media (max-width:640px){.top{gap:14px}nav{min-width:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}nav a{margin-left:14px;font-size:14px}}
