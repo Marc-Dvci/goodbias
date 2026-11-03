@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Good Bias: one straight cut, many bodies</title>
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/OrbitControls.js":"./vendor/OrbitControls.js"}}</script>
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="#fit"><span class="lat" aria-hidden="true"></span>Good Bias</a>
+  <nav>
+    <a href="#fit">Fit</a><a href="#cut">Cut</a><a href="#sizes">Sizes</a><a href="#reach">Reach</a><a href="#physics">Physics</a><a href="#law">The law</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>The only bias<br>a garment should have.</h1>
+      <p class="lead">Most woven clothing is cut so its threads cannot adjust around the body. Good Bias sews four straight strips onto the true bias, so the cloth does the fitting. One cut covers a wide run of sizes, with no offcut and about a fifth less cloth than the same gown cut as bias panels. It rests on a law I proved for how far woven cloth can move around any body.</p>
+    </div>
+    <figure class="hero-fig"><img id="heroImg" src="assets/capsule.jpg" alt="A gown, two skirts and a top on one cut of cloth"><figcaption>One cut, a = 69 cm: gown, long skirt, midi skirt and top, size 44. Cloth physics simulation on a measured body, rendered.</figcaption></figure>
+  </section>
+
+  <section id="fit" class="tool">
+    <div class="tool-left">
+      <h2>Enter a body. See the cloth respond.</h2>
+      <div class="fields">
+        <label>Bust <input id="bust" type="number" min="60" max="170" step=".5" value="87.5"><i>cm</i></label>
+        <label>Waist <input id="waist" type="number" min="50" max="160" step=".5" value="70.5"><i>cm</i></label>
+        <label>Hip <input id="hip" type="number" min="60" max="180" step=".5" value="96"><i>cm</i></label>
+      </div>
+      <label class="slider">Strip width in total, a <output id="aOut"></output>
+        <input id="a" type="range" min="45" max="110" step=".5" value="62"></label>
+      <label class="slider">Threads may close at the waist by <output id="lockOut"></output>
+        <input id="lock" type="range" min="15" max="45" step="1" value="30"></label>
+      <button id="bestA" class="link">Use the balanced width for this body</button>
+
+      <p id="verdict" class="verdict" role="status"></p>
+      <dl class="readout">
+        <div><dt>Thread angle at hip</dt><dd id="wHip"></dd></div>
+        <div><dt>Thread angle at waist</dt><dd id="wWaist"></dd></div>
+        <div><dt>Thread angle at bust</dt><dd id="wBust"></dd></div>
+        <div><dt>This body asks the threads to</dt><dd id="shear"></dd></div>
+        <div><dt>Lowest lock any cut could need here</dt><dd id="need"></dd></div>
+      </dl>
+    </div>
+    <div class="tool-right">
+      <canvas id="net3d" aria-label="Thread net on this body"></canvas>
+      <p class="note">Threads solved live on a dress form with these measurements. Drag to turn. Blue and coral are the two thread directions; 90 degrees at rest.</p>
+    </div>
+  </section>
+
+  <section id="cut" class="cut">
+    <h2>The whole pattern is one drawing.</h2>
+    <p class="lead narrow">Tear or cut along a thread. Every strip is the same straight rectangle. The sash and straps come from the same cloth.</p>
+    <div class="cut-row">
+      <svg id="marker" role="img" aria-label="Cut layout on a 150 cm roll"></svg>
+      <div class="cut-facts">
+        <dl class="readout" id="cutFacts"></dl>
+        <button id="printBtn" class="link">Print the cut sheet</button>
+      </div>
+    </div>
+    <ol class="steps">
+      <li><b>Tear</b> four strips and the ties along a thread.</li>
+      <li><b>Sew</b> each long edge to the next, stepped down by one strip width. The tube is now on the true bias.</li>
+      <li><b>Fold</b> the top and bottom points inside along one hoop, to make a casing and a level hem. Thread the cord and add the neck ties.</li>
+      <li><b>Wear.</b> Tie the sash. The threads close at the waist and open over the hip.</li>
+    </ol>
+  </section>
+
+  <section id="sizes" class="sizes">
+    <h2>Fewer cuts for more bodies.</h2>
+    <p class="lead narrow">The law turns each body into an interval of strip widths. Covering a size chart becomes an exact count.</p>
+    <label class="slider big">Threads may close at the waist by, and open at the hip by half of that <output id="lockOut2"></output>
+      <input id="lock2" type="range" min="15" max="45" step="1" value="30"></label>
+    <p id="coverLine" class="cover-line" role="status"></p>
+    <div id="bars" class="bars"></div>
+    <p class="note">Measurements are chart midpoints from a public size table. Bars show the strip widths that fit each size.</p>
+    <p id="bodyLine" class="lead narrow"></p>
+  </section>
+
+  <section id="reach" class="sizes">
+    <h2>One law for all woven clothing.</h2>
+    <p class="lead narrow">Draw a line on any woven garment. Without folding, the cloth can change that line's length by at most a factor that depends only on its angle to the threads and on the cloth's lock.</p>
+    <label class="slider big">Angle to the threads <output id="phiOut"></output>
+      <input id="phi" type="range" min="0" max="45" step="1" value="0"></label>
+    <label class="slider big">Cloth lock <output id="lockOut3"></output>
+      <input id="lock3" type="range" min="10" max="40" step="1" value="30"></label>
+    <p id="grainLine" class="cover-line" role="status"></p>
+    <h3>What one uncut tube can dress</h3>
+    <table id="mapTable"></table>
+    <p class="note">From ANSUR II, the US Army's 2012 anthropometric survey of 1,986 women. Biceps is measured flexed, which overstates the sleeve ratio.</p>
+  </section>
+
+  <section id="physics" class="physics">
+    <h2>What the simulation shows.</h2>
+    <figure class="wide"><img src="assets/lineup.jpg" alt="Eleven sizes on three cuts"><figcaption>Eleven sizes, three cuts. Each colour is one cut.</figcaption></figure>
+    <div class="phys-row">
+      <figure><img src="assets/control.jpg" alt="True bias against straight grain under the same sash"><figcaption>Same body, same sash. Left: Good Bias. Right: straight grain, cut wide enough to pass the hip.</figcaption></figure>
+      <div class="phys-copy">
+        <p class="lead" id="physLead"></p>
+        <table id="physTable"></table>
+        <p class="note" id="physNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="law" class="law">
+    <h2>The law.</h2>
+    <p class="formula">widest girth &nbsp;/&nbsp; narrowest girth &nbsp;&le;&nbsp; tan(45&deg; + &gamma;/2)</p>
+    <p class="lead narrow">Without folding, a woven tube cannot span more than this ratio. &gamma; is how far the cloth shears before it locks. The limit holds for every body, every bias angle and any number of strips. Only the true bias reaches it.</p>
+    <div class="proof">
+      <p><b>Short hoops.</b> The cloth is the plane with unit threads, joined up by the lattice vector (a, &minus;b). A straight cloth hoop has length &int; &radic;(a&sup2; + b&sup2; &minus; 2ab cos w), so it never exceeds c<sub>max</sub> = &radic;(a&sup2; + b&sup2; + 2ab sin &gamma;). Hoops sweep the whole body, so the body's sweep-out width is at most c<sub>max</sub>.</p>
+      <p><b>Long loops.</b> Any loop around the tube moves (a, &minus;b) in the cloth. Surface speed is at least the smaller of two Euclidean norms, x&sup2; + y&sup2; &plusmn; 2xy sin &gamma;. One linear form is bounded by both when sin &gamma; &le; b/a &le; 1/sin &gamma;, which gives length at least c<sub>min</sub> = &radic;(a&sup2; + b&sup2; &minus; 2ab sin &gamma;). Outside that band the bound is a cos &gamma;, and the ratio is smaller.</p>
+      <p><b>Sharp on a round body.</b> Threads at w/2 to the meridian, with c = 2a sin(w/2), form an exact net. On a round body with K r&sup2; &le; 1, the hip is exactly the sweep-out width: a 1-Lipschitz map to a round sphere and L&eacute;vy's isoperimetric inequality prove it.</p>
+    </div>
+    <p class="note">Widest means the sweep-out width: the least possible longest loop in any family of loops passing over the widest part of the body. The round-body formula is classical braid geometry. I extended it to bodies of any shape and to any woven pattern.</p>
+  </section>
+</main>
+
+<footer><span>Good Bias, a project by Marc Donovici.</span><span id="scope">All fit results come from simulation on body models matched to measurements. Cloth values are declared inputs.</span></footer>
+
+<div id="sheet" class="sheet" aria-hidden="true"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
